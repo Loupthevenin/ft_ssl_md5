@@ -27,17 +27,19 @@ typedef struct s_flags
 typedef struct s_input
 {
 	t_flags		flags;
+	char		*str_arg;
 	int			arg_i;
 }				t_input;
 
 // Main
-void			parse_flags(t_input *input, int argc, char **argv);
+int				parse_flags(t_input *input, int argc, char **argv);
 int				md5_main(int argc, char **argv);
 int				sha256_main(int argc, char **argv);
 
 // Utils
 void			print_usage(void);
 void			print_invalid_cmd(const char *cmd);
+void			print_invalid_option(char option);
 void			cleanup(t_ssl_ctx *ctx);
 
 #endif

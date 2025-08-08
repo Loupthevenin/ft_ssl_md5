@@ -33,6 +33,7 @@ int	main(int argc, char **argv)
 {
 	t_ssl_ctx	ctx;
 	t_command	*cmd;
+	int			ret;
 
 	init_ctx(&ctx);
 	if (argc < 2)
@@ -49,7 +50,7 @@ int	main(int argc, char **argv)
 		return (1);
 	}
 	// Appel de la command
-	cmd->func(argc - 1, argv + 1);
+	ret = cmd->func(argc, argv);
 	cleanup(&ctx);
-	return (0);
+	return (ret);
 }
