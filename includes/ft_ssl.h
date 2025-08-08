@@ -16,7 +16,22 @@ typedef struct s_ssl_ctx
 	size_t		command_count;
 }				t_ssl_ctx;
 
+typedef struct s_flags
+{
+	int			p;
+	int			q;
+	int			r;
+	int			s;
+}				t_flags;
+
+typedef struct s_input
+{
+	t_flags		flags;
+	int			arg_i;
+}				t_input;
+
 // Main
+void			parse_flags(t_input *input, int argc, char **argv);
 int				md5_main(int argc, char **argv);
 int				sha256_main(int argc, char **argv);
 

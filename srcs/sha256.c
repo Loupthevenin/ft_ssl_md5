@@ -2,7 +2,8 @@
 
 int	sha256_main(int argc, char **argv)
 {
-	(void)argc;
-	(void)argv;
+	t_input	input;
+
+	parse_flags(&input, argc, argv);
 	return (0);
 }
