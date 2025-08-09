@@ -1,5 +1,26 @@
 #include "../includes/ft_ssl.h"
 
+char	*read_stdin(void)
+{
+	char	*line;
+	char	*result;
+	char	*tmp;
+
+	result = ft_strdup("");
+	if (!result)
+		return (NULL);
+	while ((line = get_next_line(STDIN_FILENO)) != NULL)
+	{
+		tmp = ft_strjoin(result, line);
+		free(result);
+		result = tmp;
+		free(line);
+		if (!result)
+			return (NULL);
+	}
+	return (result);
+}
+
 void	print_usage(void)
 {
 	ft_printf("usage: ft_ssl command [flags] [file/string]\n");

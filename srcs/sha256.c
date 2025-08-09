@@ -1,10 +1,16 @@
 #include "../includes/ft_ssl.h"
 
+char	*sha256_string(const char *input)
+{
+	(void)input;
+	return (NULL);
+}
+
 int	sha256_main(int argc, char **argv)
 {
 	t_input	input;
 
 	if (parse_flags(&input, argc, argv) == -1)
 		return (EXIT_FAILURE);
-	return (EXIT_SUCCESS);
+	return (process_input(&input, argc, argv, &sha256_string));
 }

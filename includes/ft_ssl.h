@@ -4,6 +4,8 @@
 # include "../libft/ft_printf/ft_printf.h"
 # include "../libft/libft.h"
 
+typedef char	*(*t_hash_func)(const char *input);
+
 typedef struct s_command
 {
 	const char	*name;
@@ -35,8 +37,11 @@ typedef struct s_input
 int				parse_flags(t_input *input, int argc, char **argv);
 int				md5_main(int argc, char **argv);
 int				sha256_main(int argc, char **argv);
+int				process_input(t_input *input, int argc, char **argv,
+					t_hash_func hash);
 
 // Utils
+char			*read_stdin(void);
 void			print_usage(void);
 void			print_invalid_cmd(const char *cmd);
 void			print_invalid_option(char option);
