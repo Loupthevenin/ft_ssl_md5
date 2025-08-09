@@ -3,6 +3,7 @@
 
 # include "../libft/ft_printf/ft_printf.h"
 # include "../libft/libft.h"
+# include <fcntl.h>
 
 typedef char	*(*t_hash_func)(const char *input);
 
@@ -28,6 +29,7 @@ typedef struct s_flags
 
 typedef struct s_input
 {
+	char		*cmd_name;
 	t_flags		flags;
 	char		*str_arg;
 	int			arg_i;
@@ -41,10 +43,11 @@ int				process_input(t_input *input, int argc, char **argv,
 					t_hash_func hash);
 
 // Utils
-char			*read_stdin(void);
+void			print_hash(const char *label, const char *hash, t_input *input);
 void			print_usage(void);
 void			print_invalid_cmd(const char *cmd);
 void			print_invalid_option(char option);
+void			print_file_error(const char *cmd_name, const char *filename);
 void			cleanup(t_ssl_ctx *ctx);
 
 #endif

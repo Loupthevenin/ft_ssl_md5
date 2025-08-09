@@ -1,24 +1,22 @@
 #include "../includes/ft_ssl.h"
 
-char	*read_stdin(void)
+void	print_hash(const char *label, const char *hash, t_input *input)
 {
-	char	*line;
-	char	*result;
-	char	*tmp;
-
-	result = ft_strdup("");
-	if (!result)
-		return (NULL);
-	while ((line = get_next_line(STDIN_FILENO)) != NULL)
+	if (input->flags.q)
+		ft_putendl_fd((char *)hash, STDOUT_FILENO);
+	else if (input->flags.r)
 	{
-		tmp = ft_strjoin(result, line);
-		free(result);
-		result = tmp;
-		free(line);
-		if (!result)
-			return (NULL);
+		ft_putstr_fd((char *)hash, STDOUT_FILENO);
+		ft_putchar_fd(' ', STDOUT_FILENO);
+		ft_putendl_fd((char *)label, STDOUT_FILENO);
 	}
-	return (result);
+	else
+	{
+		ft_putstr_fd("MD5 (", STDOUT_FILENO);
+		ft_putstr_fd((char *)label, STDOUT_FILENO);
+		ft_putstr_fd(") = ", STDOUT_FILENO);
+		ft_putendl_fd((char *)hash, STDOUT_FILENO);
+	}
 }
 
 void	print_usage(void)
@@ -39,6 +37,18 @@ void	print_invalid_option(char option)
 	ft_putstr_fd("ft_ssl: illegal option '", 2);
 	ft_putchar_fd(option, 2);
 	ft_putstr_fd("'\n", 2);
+}
+
+void	print_file_error(const char *cmd_name, const char *filename)
+{
+	ft_putstr_fd("ft_ssl: ", STDERR_FILENO);
+	if (cmd_name)
+	{
+		ft_putstr_fd((char *)cmd_name, STDERR_FILENO);
+		ft_putstr_fd(": ", STDERR_FILENO);
+	}
+	ft_putstr_fd((char *)filename, STDERR_FILENO);
+	ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
 }
 
 void	cleanup(t_ssl_ctx *ctx)
