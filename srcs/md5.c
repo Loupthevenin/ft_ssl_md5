@@ -13,6 +13,7 @@ int	md5_main(int argc, char **argv)
 {
 	t_input	input;
 
+	ft_memset(&input, 0, sizeof(t_input));
 	input.cmd_name = "md5";
 	if (parse_flags(&input, argc, argv) == -1)
 		return (EXIT_FAILURE);

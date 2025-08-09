@@ -6,7 +6,7 @@ int	parse_flags(t_input *input, int argc, char **argv)
 	int	i;
 	int	j;
 
-	i = 2;
+	i = 1;
 	while (i < argc)
 	{
 		if (argv[i][0] == '-' && argv[i][1] && ft_strcmp(argv[i], "--") != 0)
@@ -50,10 +50,10 @@ int	parse_flags(t_input *input, int argc, char **argv)
 				}
 				j++;
 			}
+			i++;
 		}
 		else
 			break ;
-		i++;
 	}
 	input->arg_i = i;
 	return (0);

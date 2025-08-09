@@ -50,7 +50,7 @@ int	main(int argc, char **argv)
 		return (1);
 	}
 	// Appel de la command
-	ret = cmd->func(argc, argv);
+	ret = cmd->func(argc - 1, &argv[1]);
 	cleanup(&ctx);
 	return (ret);
 }
