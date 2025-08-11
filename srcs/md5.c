@@ -183,9 +183,6 @@ char	*md5_string(const char *input)
 	md5_init(&md5);
 	md5_update(&md5, (const unsigned char *)input, ft_strlen(input));
 	md5_final(digest, &md5);
-	for (i = 0; i < 16; i++)
-		fprintf(stderr, "%02x", digest[i]);
-	fprintf(stderr, "\n");
 	result = malloc(33);
 	if (!result)
 		return (NULL);
