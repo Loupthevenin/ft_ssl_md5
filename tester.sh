@@ -66,7 +66,7 @@ run_test() {
 test_string() {
 	run_test "MD5 -s string" \
 		"$PROGRAM md5 -s '42 is nice'" \
-		"(stdin)= 35f1d6de0302e2086a4e472266efb3a9" \
+		"(stdin)= 0029a98ee90fdb85d70924d44d3c9e75" \
 		0
 
 	run_test "MD5 -s string" \
@@ -107,7 +107,7 @@ test_combined() {
 	expected_output='("42 is nice")= 35f1d6de0302e2086a4e472266efb3a9'
 	run_test "MD5 -p with stdin" \
 		"$PROGRAM md5 -p" \
-		expected_output \
+		"$expected_output" \
 		0 \
 		"42 is nice"
 

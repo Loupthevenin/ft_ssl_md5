@@ -37,6 +37,7 @@ static char	*read_file(const char *path)
 int	process_input(t_input *input, int argc, char **argv, t_hash_func hash)
 {
 	int		i;
+	size_t	len;
 	char	*data;
 	char	*digest;
 
@@ -47,7 +48,14 @@ int	process_input(t_input *input, int argc, char **argv, t_hash_func hash)
 		if (!data)
 			return (EXIT_FAILURE);
 		digest = hash(data);
-		print_hash("(stdin)", digest, input, 0);
+		ft_putstr_fd("(\"", STDOUT_FILENO);
+		len = ft_strlen(data);
+		if (len > 0 && data[len - 1] == '\n')
+			write(STDOUT_FILENO, data, len - 1);
+		else
+			ft_putstr_fd(data, STDOUT_FILENO);
+		ft_putstr_fd("\")= ", STDOUT_FILENO);
+		ft_putendl_fd(digest, STDOUT_FILENO);
 		free(data);
 		free(digest);
 	}
