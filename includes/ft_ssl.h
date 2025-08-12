@@ -43,7 +43,8 @@ int				process_input(t_input *input, int argc, char **argv,
 					t_hash_func hash);
 
 // Utils
-void			print_hash(const char *label, const char *hash, t_input *input);
+void			print_hash(const char *label, const char *hash, t_input *input,
+					int file);
 void			print_usage(void);
 void			print_invalid_cmd(const char *cmd);
 void			print_invalid_option(char option);

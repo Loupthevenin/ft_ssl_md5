@@ -47,7 +47,7 @@ int	process_input(t_input *input, int argc, char **argv, t_hash_func hash)
 		if (!data)
 			return (EXIT_FAILURE);
 		digest = hash(data);
-		ft_putstr_fd("(stdin)", 1);
+		print_hash("(stdin)", digest, input, 0);
 		free(data);
 		free(digest);
 	}
@@ -55,7 +55,7 @@ int	process_input(t_input *input, int argc, char **argv, t_hash_func hash)
 	if (input->flags.s)
 	{
 		digest = hash(input->str_arg);
-		print_hash(input->str_arg, digest, input);
+		print_hash("(stdin)", digest, input, 0);
 		free(digest);
 	}
 	// fichiers restants
@@ -68,7 +68,7 @@ int	process_input(t_input *input, int argc, char **argv, t_hash_func hash)
 		else
 		{
 			digest = hash(data);
-			print_hash(argv[i], digest, input);
+			print_hash(argv[i], digest, input, 1);
 			free(data);
 			free(digest);
 		}
@@ -81,7 +81,7 @@ int	process_input(t_input *input, int argc, char **argv, t_hash_func hash)
 		if (!data)
 			return (EXIT_FAILURE);
 		digest = hash(data);
-		print_hash("(stdin)", digest, input);
+		print_hash("(stdin)", digest, input, 0);
 		free(data);
 		free(digest);
 	}

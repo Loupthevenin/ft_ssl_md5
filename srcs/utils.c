@@ -1,6 +1,7 @@
 #include "../includes/ft_ssl.h"
 
-void	print_hash(const char *label, const char *hash, t_input *input)
+void	print_hash(const char *label, const char *hash, t_input *input,
+		int file)
 {
 	if (input->flags.q)
 		ft_putendl_fd((char *)hash, STDOUT_FILENO);
@@ -12,9 +13,18 @@ void	print_hash(const char *label, const char *hash, t_input *input)
 	}
 	else
 	{
-		ft_putstr_fd("MD5 (", STDOUT_FILENO);
-		ft_putstr_fd((char *)label, STDOUT_FILENO);
-		ft_putstr_fd(") = ", STDOUT_FILENO);
+		if (file)
+		{
+			ft_putstr_fd("MD5 (", STDOUT_FILENO);
+			ft_putstr_fd((char *)label, STDOUT_FILENO);
+			ft_putstr_fd(") = ", STDOUT_FILENO);
+		}
+		else
+		{
+			ft_putstr_fd((char *)label, STDOUT_FILENO);
+			ft_putstr_fd("=", STDOUT_FILENO);
+			ft_putchar_fd(' ', STDOUT_FILENO);
+		}
 		ft_putendl_fd((char *)hash, STDOUT_FILENO);
 	}
 }
