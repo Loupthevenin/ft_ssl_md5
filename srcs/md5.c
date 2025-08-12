@@ -1,4 +1,5 @@
 #include "../includes/ft_ssl.h"
+#include "../includes/md5.h"
 
 static void	decode(unsigned int *output, const unsigned char *input, size_t len)
 {

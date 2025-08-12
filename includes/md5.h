@@ -1,6 +1,18 @@
 #ifndef MD5_H
 # define MD5_H
 
+typedef struct s_md5
+{
+	unsigned int		state[4];
+	unsigned long long	bitcount;
+	unsigned char		buffer[64];
+}						t_md5;
+
+# define INIT_DATA_A (unsigned long)0x67452301L
+# define INIT_DATA_B (unsigned long)0xefcdab89L
+# define INIT_DATA_C (unsigned long)0x98badcfeL
+# define INIT_DATA_D (unsigned long)0x10325476L
+
 # define S11 7
 # define S12 12
 # define S13 17
