@@ -64,27 +64,59 @@ run_test() {
 # --------------------------
 
 test_string() {
-	run_test "MD5 -s string" \
-		"$PROGRAM md5 -s '42 is nice'" \
-		"(stdin)= 0029a98ee90fdb85d70924d44d3c9e75" \
-		0
 
+	input_str="pity those that aren't following baerista on spotify."
+	expected_output="MD5 (\"$input_str\") = a3c990a1964705d9bf0e602f44572f5f"
 	run_test "MD5 -s string" \
-		"$PROGRAM md5 -s ''" \
-		"(stdin)= d41d8cd98f00b204e9800998ecf8427e" \
-		0
-
-	run_test "MD5 -s string" \
-		"$PROGRAM md5 -s 'test'" \
-		"(stdin)= 098f6bcd4621d373cade4e832627b4f6" \
+		"$PROGRAM md5 -s \"$input_str\"" \
+		"$expected_output" \
 		0
 }
 
+# TODO: ne pas oublier le test echo | ./ft_ssl md5
 # Test avec stdin pipe
 test_stdin() {
+
 	run_test "MD5 with stdin" \
 		"$PROGRAM md5" \
 		"(stdin)= 35f1d6de0302e2086a4e472266efb3a9" \
+		0 \
+		"42 is nice"
+
+	run_test "MD5 with stdin" \
+		"$PROGRAM md5" \
+		"(stdin)= d8e8fca2dc0f896fd7cb4cb0031ba249" \
+		0 \
+		"test"
+
+	run_test "MD5 with stdin -qr" \
+		"$PROGRAM md5 -qr" \
+		"e20c3b973f63482a778f3fd1869b7f25" \
+		0 \
+		"Pity the living."
+
+	run_test "MD5 with stdin -q -r" \
+		"$PROGRAM md5 -q -r" \
+		"e20c3b973f63482a778f3fd1869b7f25" \
+		0 \
+		"Pity the living."
+
+	run_test "MD5 with stdin -r -q" \
+		"$PROGRAM md5 -r -q" \
+		"e20c3b973f63482a778f3fd1869b7f25" \
+		0 \
+		"Pity the living."
+
+	run_test "MD5 with stdin -rq" \
+		"$PROGRAM md5 -rq" \
+		"e20c3b973f63482a778f3fd1869b7f25" \
+		0 \
+		"Pity the living."
+
+	expected_output='("42 is nice")= 35f1d6de0302e2086a4e472266efb3a9'
+	run_test "MD5 -p with stdin" \
+		"$PROGRAM md5 -p" \
+		"$expected_output" \
 		0 \
 		"42 is nice"
 }
@@ -94,23 +126,58 @@ test_file() {
 	# Prépare fichier de test
 	echo "And above all," >file
 	expected_output="MD5 (file) = 53d53ea94217b259c11a5a2d104ec58a"
+	expected_output_r="53d53ea94217b259c11a5a2d104ec58a file"
 
 	run_test "MD5 with file" \
 		"$PROGRAM md5 file" \
 		"$expected_output" \
 		0
-	rm -f file
+
+	run_test "MD5 with file" \
+		"$PROGRAM md5 -r file" \
+		"$expected_output_r" \
+		0
 }
 
 # Test combinaisons, flags -p, -r, etc
 test_combined() {
-	expected_output='("42 is nice")= 35f1d6de0302e2086a4e472266efb3a9'
-	run_test "MD5 -p with stdin" \
-		"$PROGRAM md5 -p" \
+	expected_output=$'("be sure to handle edge cases carefully")= 3553dc7dc5963b583c056d1b9fa3349c\nMD5 (file) = 53d53ea94217b259c11a5a2d104ec58a'
+	run_test "MD5 -p with stdin + file" \
+		"$PROGRAM md5 -p file" \
 		"$expected_output" \
 		0 \
-		"42 is nice"
+		"be sure to handle edge cases carefully"
 
+	run_test "MD5 with stdin + file" \
+		"$PROGRAM md5 file" \
+		"MD5 (file) = 53d53ea94217b259c11a5a2d104ec58a" \
+		0 \
+		"some of this will not make sense at first"
+
+	expected_output=$'("but eventually you will understand")= dcdd84e0f635694d2a943fa8d3905281\n53d53ea94217b259c11a5a2d104ec58a file'
+	run_test "MD5 -p -r + file" \
+		"$PROGRAM md5 -p -r file" \
+		"$expected_output" \
+		0 \
+		"but eventually you will understand"
+
+	run_test "MD5 -r -p + file" \
+		"$PROGRAM md5 -r -p file" \
+		"$expected_output" \
+		0 \
+		"but eventually you will understand"
+
+	run_test "MD5 -rp + file" \
+		"$PROGRAM md5 -rp file" \
+		"$expected_output" \
+		0 \
+		"but eventually you will understand"
+
+	run_test "MD5 -pr + file" \
+		"$PROGRAM md5 -rp file" \
+		"$expected_output" \
+		0 \
+		"but eventually you will understand"
 }
 
 # Test option invalide

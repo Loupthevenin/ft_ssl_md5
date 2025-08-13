@@ -43,6 +43,9 @@ int				process_input(t_input *input, int argc, char **argv,
 					t_hash_func hash);
 
 // Utils
+void	print_quoted_data_with_hash(const char *data,
+									const char *digest,
+									int is_stdin_with_p_flag);
 void			print_hash(const char *label, const char *hash, t_input *input,
 					int file);
 void			print_usage(void);

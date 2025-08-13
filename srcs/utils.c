@@ -1,5 +1,28 @@
 #include "../includes/ft_ssl.h"
 
+void	print_quoted_data_with_hash(const char *data, const char *digest,
+		int is_stdin_with_p_flag)
+{
+	size_t	len;
+
+	len = ft_strlen(data);
+	if (is_stdin_with_p_flag)
+		ft_putstr_fd("(", STDOUT_FILENO);
+	else
+		ft_putstr_fd("MD5 (", STDOUT_FILENO);
+	ft_putstr_fd("\"", STDOUT_FILENO);
+	if (len > 0 && data[len - 1] == '\n')
+		write(STDOUT_FILENO, data, len - 1);
+	else
+		ft_putstr_fd((char *)data, STDOUT_FILENO);
+	ft_putstr_fd("\")", STDOUT_FILENO);
+	if (is_stdin_with_p_flag)
+		ft_putstr_fd("= ", STDOUT_FILENO);
+	else
+		ft_putstr_fd(" = ", STDOUT_FILENO);
+	ft_putendl_fd((char *)digest, STDOUT_FILENO);
+}
+
 void	print_hash(const char *label, const char *hash, t_input *input,
 		int file)
 {
