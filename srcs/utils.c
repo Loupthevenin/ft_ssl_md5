@@ -56,6 +56,7 @@ void	print_usage(void)
 {
 	ft_printf("usage: ft_ssl command [flags] [file/string]\n");
 	ft_printf("Commands:\n md5\n sha256\n");
+	ft_printf("Flags:\n -p -q -r -s\n");
 }
 
 void	print_invalid_cmd(const char *cmd)
