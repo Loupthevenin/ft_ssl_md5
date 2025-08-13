@@ -37,9 +37,11 @@ static char	*read_file(const char *path)
 int	process_input(t_input *input, int argc, char **argv, t_hash_func hash)
 {
 	int		i;
+	int		status;
 	char	*data;
 	char	*digest;
 
+	status = EXIT_SUCCESS;
 	// Si flag -p
 	if (input->flags.p)
 	{
@@ -64,7 +66,10 @@ int	process_input(t_input *input, int argc, char **argv, t_hash_func hash)
 	{
 		data = read_file(argv[i]);
 		if (!data)
+		{
 			print_file_error(input->cmd_name, argv[i]);
+			status = EXIT_FAILURE;
+		}
 		else
 		{
 			digest = hash(data);
@@ -85,5 +90,5 @@ int	process_input(t_input *input, int argc, char **argv, t_hash_func hash)
 		free(data);
 		free(digest);
 	}
-	return (EXIT_SUCCESS);
+	return (status);
 }

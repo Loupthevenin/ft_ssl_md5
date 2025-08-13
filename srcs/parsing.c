@@ -1,6 +1,5 @@
 #include "../includes/ft_ssl.h"
 
-// TODO: -valid flag + invalid flag
 int	parse_flags(t_input *input, int argc, char **argv)
 {
 	int	i;
