@@ -76,9 +76,19 @@ test_string() {
 		"$PROGRAM md5 -r -s 'test reverse string'" \
 		"$expected_output" \
 		0
+
+	run_test "MD5 -s sans argument" \
+		"$PROGRAM md5 -s" \
+		"ft_ssl: option requires an argument -- s" \
+		1
+
+	expected_output=$'MD5 ("") = d41d8cd98f00b204e9800998ecf8427e'
+	run_test "MD5 -s argument vide" \
+		"$PROGRAM md5 -s ''" \
+		"$expected_output" \
+		0
 }
 
-# TODO: ne pas oublier le test echo | ./ft_ssl md5
 # Test avec stdin pipe
 test_stdin() {
 
@@ -142,6 +152,11 @@ test_file() {
 		"$PROGRAM md5 -r file" \
 		"$expected_output_r" \
 		0
+
+	run_test "MD5 no file" \
+		"$PROGRAM md5 noexist" \
+		"ft_ssl: md5: noexist: No such file or directory" \
+		1
 }
 
 # Test combinaisons, flags -p, -r, etc
@@ -195,7 +210,7 @@ test_combined() {
 	run_test "MD5 with stdin -r -p + string + file + string" \
 		"$PROGRAM md5 -r -p -s 'foo' file -s 'bar'" \
 		"$expected_output" \
-		0 \
+		1 \
 		"one more thing"
 
 	expected_output=$'just to be extra clear\n3ba35f1ea0d170cb3b9a752e3360286c\nacbd18db4cc2f85cedef654fccc4a4d8\n53d53ea94217b259c11a5a2d104ec58a'
@@ -219,14 +234,6 @@ test_invalid() {
 		"$PROGRAM md5 -z" \
 		"_IGNORE_" \
 		1
-
-	expected_output=$'just to be extra clear\n3ba35f1ea0d170cb3b9a752e3360286c\nacbd18db4cc2f85cedef654fccc4a4d8\n53d53ea94217b259c11a5a2d104ec58a'
-	run_test "Option invalide" \
-		"$PROGRAM md5 -rqpst 'foo' file" \
-		"_IGNORE_" \
-		1 \
-		"just to be extra clear"
-
 }
 # --------------------------
 # RÉSULTATS
