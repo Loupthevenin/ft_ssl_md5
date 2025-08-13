@@ -1,55 +1,83 @@
 #include "../includes/ft_ssl.h"
 
-void	print_quoted_data_with_hash(const char *data, const char *digest,
-		int is_stdin_with_p_flag)
+static void	strip_newline(char *s)
 {
 	size_t	len;
 
-	len = ft_strlen(data);
-	if (is_stdin_with_p_flag)
-		ft_putstr_fd("(", STDOUT_FILENO);
-	else
-		ft_putstr_fd("MD5 (", STDOUT_FILENO);
-	ft_putstr_fd("\"", STDOUT_FILENO);
-	if (len > 0 && data[len - 1] == '\n')
-		write(STDOUT_FILENO, data, len - 1);
-	else
-		ft_putstr_fd((char *)data, STDOUT_FILENO);
-	ft_putstr_fd("\")", STDOUT_FILENO);
-	if (is_stdin_with_p_flag)
-		ft_putstr_fd("= ", STDOUT_FILENO);
-	else
-		ft_putstr_fd(" = ", STDOUT_FILENO);
-	ft_putendl_fd((char *)digest, STDOUT_FILENO);
+	len = ft_strlen(s);
+	if (len > 0 && s[len - 1] == '\n')
+		s[len - 1] = '\0';
 }
 
-void	print_hash(const char *label, const char *hash, t_input *input,
-		int file)
+void	print_p_case(const char *data, const char *digest, t_input *input)
 {
+	char	*tmp;
+
+	tmp = ft_strdup(data);
+	if (!tmp)
+		return ;
+	strip_newline(tmp);
 	if (input->flags.q)
-		ft_putendl_fd((char *)hash, STDOUT_FILENO);
+	{
+		ft_putendl_fd(tmp, STDOUT_FILENO);
+		ft_putendl_fd((char *)digest, STDOUT_FILENO);
+		free(tmp);
+		return ;
+	}
+	ft_putchar_fd('(', STDOUT_FILENO);
+	ft_putchar_fd('"', STDOUT_FILENO);
+	ft_putstr_fd(tmp, STDOUT_FILENO);
+	ft_putstr_fd("\")= ", STDOUT_FILENO);
+	ft_putendl_fd((char *)digest, STDOUT_FILENO);
+	free(tmp);
+}
+
+void	print_s_or_file(const char *label, const char *digest, t_input *input,
+		int is_file)
+{
+	int	is_stdin;
+
+	is_stdin = (ft_strcmp(label, "(stdin)") == 0);
+	if (input->flags.q)
+	{
+		ft_putendl_fd((char *)digest, STDOUT_FILENO);
+		return ;
+	}
 	else if (input->flags.r)
 	{
-		ft_putstr_fd((char *)hash, STDOUT_FILENO);
+		ft_putstr_fd((char *)digest, STDOUT_FILENO);
 		ft_putchar_fd(' ', STDOUT_FILENO);
-		ft_putendl_fd((char *)label, STDOUT_FILENO);
-	}
-	else
-	{
-		if (file)
-		{
-			ft_putstr_fd("MD5 (", STDOUT_FILENO);
-			ft_putstr_fd((char *)label, STDOUT_FILENO);
-			ft_putstr_fd(") = ", STDOUT_FILENO);
-		}
+		if (is_stdin)
+			ft_putendl_fd("(stdin)", STDOUT_FILENO); // digest (stdin)
+		else if (is_file)
+			ft_putendl_fd((char *)label, STDOUT_FILENO); // digest file
 		else
 		{
+			ft_putchar_fd('"', STDOUT_FILENO); // digest "string"
 			ft_putstr_fd((char *)label, STDOUT_FILENO);
-			ft_putstr_fd("=", STDOUT_FILENO);
-			ft_putchar_fd(' ', STDOUT_FILENO);
+			ft_putendl_fd("\"", STDOUT_FILENO);
 		}
-		ft_putendl_fd((char *)hash, STDOUT_FILENO);
+		return ;
 	}
+	// format normal (pas -q, pas -r)
+	if (is_stdin)
+	{
+		ft_putstr_fd("(stdin)", STDOUT_FILENO); // (stdin)= digest
+		ft_putstr_fd("= ", STDOUT_FILENO);
+		ft_putendl_fd((char *)digest, STDOUT_FILENO);
+		return ;
+	}
+	ft_putstr_fd("MD5 (", STDOUT_FILENO);
+	if (is_file)
+		ft_putstr_fd((char *)label, STDOUT_FILENO); // MD5 (file) = digest
+	else
+	{
+		ft_putchar_fd('"', STDOUT_FILENO); // MD5 ("string") = digest
+		ft_putstr_fd((char *)label, STDOUT_FILENO);
+		ft_putchar_fd('"', STDOUT_FILENO);
+	}
+	ft_putstr_fd(") = ", STDOUT_FILENO);
+	ft_putendl_fd((char *)digest, STDOUT_FILENO);
 }
 
 void	print_usage(void)

@@ -64,11 +64,16 @@ run_test() {
 # --------------------------
 
 test_string() {
-
 	input_str="pity those that aren't following baerista on spotify."
 	expected_output="MD5 (\"$input_str\") = a3c990a1964705d9bf0e602f44572f5f"
 	run_test "MD5 -s string" \
 		"$PROGRAM md5 -s \"$input_str\"" \
+		"$expected_output" \
+		0
+
+	expected_output=$'505211af1b713cc6fb137044df047c5d "test reverse string"'
+	run_test "MD5 -r -s string" \
+		"$PROGRAM md5 -r -s 'test reverse string'" \
 		"$expected_output" \
 		0
 }
@@ -178,6 +183,34 @@ test_combined() {
 		"$expected_output" \
 		0 \
 		"but eventually you will understand"
+
+	expected_output=$'("GL HF let\'s go")= d1e3cc342b6da09480b27ec57ff243e2\nMD5 ("foo") = acbd18db4cc2f85cedef654fccc4a4d8\nMD5 (file) = 53d53ea94217b259c11a5a2d104ec58a'
+	run_test "MD5 with stdin -p + string + file" \
+		"$PROGRAM md5 -p -s 'foo' file" \
+		"$expected_output" \
+		0 \
+		"GL HF let's go"
+
+	expected_output=$'("one more thing")= a0bd1876c6f011dd50fae52827f445f5\nacbd18db4cc2f85cedef654fccc4a4d8 "foo"\n53d53ea94217b259c11a5a2d104ec58a file\nft_ssl: md5: -s: No such file or directory\nft_ssl: md5: bar: No such file or directory'
+	run_test "MD5 with stdin -r -p + string + file + string" \
+		"$PROGRAM md5 -r -p -s 'foo' file -s 'bar'" \
+		"$expected_output" \
+		0 \
+		"one more thing"
+
+	expected_output=$'just to be extra clear\n3ba35f1ea0d170cb3b9a752e3360286c\nacbd18db4cc2f85cedef654fccc4a4d8\n53d53ea94217b259c11a5a2d104ec58a'
+	run_test "MD5 whith all flags" \
+		"$PROGRAM md5 -r -q -p -s 'foo' file" \
+		"$expected_output" \
+		0 \
+		"just to be extra clear"
+
+	expected_output=$'just to be extra clear\n3ba35f1ea0d170cb3b9a752e3360286c\nacbd18db4cc2f85cedef654fccc4a4d8\n53d53ea94217b259c11a5a2d104ec58a'
+	run_test "MD5 whith all flags" \
+		"$PROGRAM md5 -rqps 'foo' file" \
+		"$expected_output" \
+		0 \
+		"just to be extra clear"
 }
 
 # Test option invalide
@@ -186,6 +219,14 @@ test_invalid() {
 		"$PROGRAM md5 -z" \
 		"_IGNORE_" \
 		1
+
+	expected_output=$'just to be extra clear\n3ba35f1ea0d170cb3b9a752e3360286c\nacbd18db4cc2f85cedef654fccc4a4d8\n53d53ea94217b259c11a5a2d104ec58a'
+	run_test "Option invalide" \
+		"$PROGRAM md5 -rqpst 'foo' file" \
+		"_IGNORE_" \
+		1 \
+		"just to be extra clear"
+
 }
 # --------------------------
 # RÉSULTATS
