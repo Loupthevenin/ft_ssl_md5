@@ -21,14 +21,9 @@ void	print_p_case(const char *data, const char *digest, t_input *input)
 	{
 		ft_putendl_fd(tmp, STDOUT_FILENO);
 		ft_putendl_fd((char *)digest, STDOUT_FILENO);
-		free(tmp);
-		return ;
 	}
-	ft_putchar_fd('(', STDOUT_FILENO);
-	ft_putchar_fd('"', STDOUT_FILENO);
-	ft_putstr_fd(tmp, STDOUT_FILENO);
-	ft_putstr_fd("\")= ", STDOUT_FILENO);
-	ft_putendl_fd((char *)digest, STDOUT_FILENO);
+	else
+		ft_printf("(%s\"%s\")= %s\n", "", tmp, digest); // affichage compact
 	free(tmp);
 }
 
@@ -39,45 +34,27 @@ void	print_s_or_file(const char *label, const char *digest, t_input *input,
 
 	is_stdin = (ft_strcmp(label, "(stdin)") == 0);
 	if (input->flags.q)
-	{
 		ft_putendl_fd((char *)digest, STDOUT_FILENO);
-		return ;
-	}
 	else if (input->flags.r)
 	{
 		ft_putstr_fd((char *)digest, STDOUT_FILENO);
 		ft_putchar_fd(' ', STDOUT_FILENO);
-		if (is_stdin)
-			ft_putendl_fd("(stdin)", STDOUT_FILENO); // digest (stdin)
-		else if (is_file)
-			ft_putendl_fd((char *)label, STDOUT_FILENO); // digest file
+		if (is_stdin || is_file)
+			ft_putendl_fd((char *)label, STDOUT_FILENO);
 		else
-		{
-			ft_putchar_fd('"', STDOUT_FILENO); // digest "string"
-			ft_putstr_fd((char *)label, STDOUT_FILENO);
-			ft_putendl_fd("\"", STDOUT_FILENO);
-		}
-		return ;
+			ft_printf("\"%s\"\n", label);
 	}
-	// format normal (pas -q, pas -r)
-	if (is_stdin)
+	else // format normal
 	{
-		ft_putstr_fd("(stdin)", STDOUT_FILENO); // (stdin)= digest
-		ft_putstr_fd("= ", STDOUT_FILENO);
-		ft_putendl_fd((char *)digest, STDOUT_FILENO);
-		return ;
+		if (is_stdin)
+			ft_printf("(stdin)= %s\n", digest);
+		else
+			ft_printf("MD5 (%s%s%s) = %s\n",
+						is_file ? "" : "\"",
+						label,
+						is_file ? "" : "\"",
+						digest);
 	}
-	ft_putstr_fd("MD5 (", STDOUT_FILENO);
-	if (is_file)
-		ft_putstr_fd((char *)label, STDOUT_FILENO); // MD5 (file) = digest
-	else
-	{
-		ft_putchar_fd('"', STDOUT_FILENO); // MD5 ("string") = digest
-		ft_putstr_fd((char *)label, STDOUT_FILENO);
-		ft_putchar_fd('"', STDOUT_FILENO);
-	}
-	ft_putstr_fd(") = ", STDOUT_FILENO);
-	ft_putendl_fd((char *)digest, STDOUT_FILENO);
 }
 
 void	print_usage(void)
