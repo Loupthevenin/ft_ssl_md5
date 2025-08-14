@@ -1,6 +1,12 @@
 #include "../includes/ft_ssl.h"
 #include "../includes/md5.h"
 
+/*
+** decode :
+** Convertit un bloc de 64 octets (512 bits) en un tableau de 16 entiers 32 bits.
+** MD5 travaille en little-endian → le byte le moins significatif vient en premier.
+** Exemple : octets [0x01, 0x02, 0x03, 0x04] → 0x04030201
+*/
 static void	decode(unsigned int *output, const unsigned char *input, size_t len)
 {
 	size_t	i;
@@ -19,6 +25,14 @@ static void	decode(unsigned int *output, const unsigned char *input, size_t len)
 	}
 }
 
+/*
+** md5_init :
+** Initialise le contexte MD5 avec :
+** - bitcount = nombre total de bits traités (commence à 0)
+** - state[] = valeurs initiales A, B, C, D (définies dans RFC 1321)
+**   Pourquoi ces valeurs ? C’est un choix empirique des auteurs pour
+**   obtenir une bonne diffusion/avalanche.
+*/
 static void	md5_init(t_md5 *md5)
 {
 	ft_memset(md5, 0, sizeof(*md5));
@@ -29,6 +43,22 @@ static void	md5_init(t_md5 *md5)
 	md5->state[3] = INIT_DATA_D;
 }
 
+/*
+** md5_transform :
+** Cœur de l’algorithme.
+** - Entrée : un bloc de 64 octets (512 bits)
+** - Les 512 bits sont vus comme 16 mots de 32 bits → x[0..15]
+** - On fait 64 opérations, divisées en 4 "rounds" de 16 étapes chacun :
+**   ROUND 1 : fonction F, mélange basique binaire
+**   ROUND 2 : fonction G, permutation différente des mots
+**   ROUND 3 : fonction H, XOR
+**   ROUND 4 : fonction I, mélange final
+**
+** Pourquoi 64 opérations ?
+**  → Chaque round applique une fonction non linéaire différente
+**    sur une combinaison de A,B,C,D et d’un mot x[i] avec une constante T[i].
+**    Cela crée une bonne avalanche : une modification minime change tout le digest.
+*/
 static void	md5_transform(unsigned int state[4], const unsigned char block[64])
 {
 	unsigned int	a;
@@ -116,6 +146,11 @@ static void	md5_transform(unsigned int state[4], const unsigned char block[64])
 	state[3] += d;
 }
 
+/*
+** md5_update :
+** Découpe l'entrée en blocs de 64 octets et appelle md5_transform pour chacun.
+** Si le dernier bloc n’est pas complet, il est stocké dans md5->buffer.
+*/
 static void	md5_update(t_md5 *md5, const unsigned char *data, size_t len)
 {
 	size_t	i;
@@ -141,6 +176,14 @@ static void	md5_update(t_md5 *md5, const unsigned char *data, size_t len)
 	ft_memcpy(&md5->buffer[buffer_index], &data[i], len - i);
 }
 
+/*
+** md5_final :
+** - Ajoute le bit '1' (0x80) puis des zéros jusqu'à ce que
+**   la longueur soit congruente à 56 mod 64.
+** - Ajoute la longueur totale en bits (8 octets, little-endian).
+** - Transforme le dernier bloc.
+** - Écrit le state final (A,B,C,D) dans digest[16] (toujours en little-endian).
+*/
 static void	md5_final(unsigned char digest[16], t_md5 *md5)
 {
 	unsigned char	padding[64];
@@ -191,7 +234,18 @@ char	*md5_string(const char *input)
 	hex = "0123456789abcdef";
 	while (i < 16)
 	{
+		// Chaque byte du digest (8 bits) doit être converti en 2 caractères hexadécimaux.
+		// Exemple : digest[i] = 0xBC (binaire : 10111100)
+		//
+		// 1) (digest[i] >> 4) décale à droite de 4 bits -> 00001011 (0x0B)
+		// 2) & 0xF garde seulement les 4 bits de poids fort (high nibble)
+		// -> 0x0B
+		// 3) hex[...] va chercher le caractère correspondant dans "0123456789abcdef"
+		// -> 'b'
 		result[i * 2] = hex[(digest[i] >> 4) & 0xF];
+		// 1) digest[i] & 0xF garde uniquement les 4 bits de poids faible (low nibble)
+		// -> 0x0C
+		// 2) hex[...] va chercher le caractère correspondant -> 'c'
 		result[i * 2 + 1] = hex[digest[i] & 0xF];
 		i++;
 	}
