@@ -1,6 +1,13 @@
 #include "../includes/ft_ssl.h"
 #include "../includes/sha256.h"
 
+/**
+ * Retourne un pointeur vers la table constante K utilisée dans SHA-256.
+
+	* Cette table contient 64 constantes de 32 bits dérivées des racines cubiques des 64 premiers nombres premiers.
+
+	* Ces constantes sont utilisées à chaque étape de la transformation pour introduire de la non-linéarité.
+ */
 static const unsigned int	*sha256_get_k(void)
 {
 	static const uint32_t K[64] = {
@@ -20,6 +27,12 @@ static const unsigned int	*sha256_get_k(void)
 	return (K);
 }
 
+/**
+ * Initialise une structure t_sha256 pour le calcul d'un hash.
+
+	* Les valeurs initiales sont les constantes standard définies par le SHA-256 (RFC 6234).
+ * On initialise également le compteur de bits et le tampon de données.
+ */
 static void	sha256_init(t_sha256 *sha256)
 {
 	sha256->state[0] = INIT_DATA_A;
@@ -34,6 +47,13 @@ static void	sha256_init(t_sha256 *sha256)
 	ft_memset(sha256->buffer, 0, 64);
 }
 
+/**
+
+	* Transforme un bloc de 512 bits (64 octets) en mettant à jour l'état de hachage.
+ * - Remplit d'abord le tableau de mots w[64] à partir des données d'entrée.
+ * - Applique les fonctions de mélange et rotations spécifiques SHA-256.
+ * - Met à jour les 8 variables de l'état (a-h) pour ce bloc.
+ */
 static void	sha256_transform(t_sha256 *sha256, const unsigned char data[64])
 {
 	unsigned int		w[64];
@@ -43,6 +63,7 @@ static void	sha256_transform(t_sha256 *sha256, const unsigned char data[64])
 	unsigned int a, b, c, d, e, f, g, h, t1, t2;
 	i = 0;
 	k = sha256_get_k();
+	// Remplissage des 16 premiers mots avec les données brutes
 	while (i < 16)
 	{
 		w[i] = data[i * 4] << 24 | (data[i * 4 + 1] << 16) | (data[i * 4
@@ -50,6 +71,7 @@ static void	sha256_transform(t_sha256 *sha256, const unsigned char data[64])
 		i++;
 	}
 	i = 16;
+	// Extension des 16 mots en 64 mots avec les fonctions de mélange SHA-256
 	while (i < 64)
 	{
 		w[i] = SSIG1(w[i - 2]) + w[i - 7] + SSIG0(w[i - 15]) + w[i - 16];
@@ -64,6 +86,7 @@ static void	sha256_transform(t_sha256 *sha256, const unsigned char data[64])
 	g = sha256->state[6];
 	h = sha256->state[7];
 	i = 0;
+	// Boucle principale de compression
 	while (i < 64)
 	{
 		t1 = h + BS1G1(e) + CH(e, f, g) + k[i] + w[i];
@@ -88,6 +111,13 @@ static void	sha256_transform(t_sha256 *sha256, const unsigned char data[64])
 	sha256->state[7] += h;
 }
 
+/**
+ * Met à jour le contexte SHA-256 avec de nouvelles données.
+ * - Concatène les données entrantes au tampon existant.
+ * - Dès qu'un bloc complet de 64 octets est disponible,
+	appelle sha256_transform.
+ * - Gère le reste des données qui ne constitue pas un bloc complet.
+ */
 static void	sha256_update(t_sha256 *sha256, const unsigned char *data,
 		size_t len)
 {
@@ -121,6 +151,12 @@ static void	sha256_update(t_sha256 *sha256, const unsigned char *data,
 		ft_memcpy(sha256->buffer, &data[i], len - i);
 }
 
+/**
+ * Finalise le calcul SHA-256.
+ * - Ajoute le padding nécessaire selon RFC 6234.
+ * - Ajoute la longueur du message en bits.
+ * - Convertit l'état final en tableau d'octets digest.
+ */
 static void	sha256_final(unsigned char digest[32], t_sha256 *sha256)
 {
 	unsigned char	padding[64];
