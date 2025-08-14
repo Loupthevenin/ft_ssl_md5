@@ -9,6 +9,22 @@ static void	strip_newline(char *s)
 		s[len - 1] = '\0';
 }
 
+static void	print_upper(const char *name)
+{
+	int		i;
+	char	c;
+
+	i = 0;
+	while (name[i])
+	{
+		c = name[i];
+		if (c >= 'a' && c <= 'z')
+			c -= 32;
+		ft_putchar_fd(c, STDOUT_FILENO);
+		i++;
+	}
+}
+
 void	print_p_case(const char *data, const char *digest, t_input *input)
 {
 	char	*tmp;
@@ -49,11 +65,14 @@ void	print_s_or_file(const char *label, const char *digest, t_input *input,
 		if (is_stdin)
 			ft_printf("(stdin)= %s\n", digest);
 		else
-			ft_printf("MD5 (%s%s%s) = %s\n",
+		{
+			print_upper(input->cmd_name);
+			ft_printf(" (%s%s%s) = %s\n",
 						is_file ? "" : "\"",
 						label,
 						is_file ? "" : "\"",
 						digest);
+		}
 	}
 }
 
