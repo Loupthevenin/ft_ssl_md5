@@ -230,6 +230,19 @@ test_file() {
 		"ft_ssl: md5: noexist: No such file or directory" \
 		1
 
+	echo "File 1" >file1
+	echo "File 2" >file2
+	expected_output=$'MD5 (file1) = f6994894a975f34178b43db4062cece1\nMD5 (file2) = 4345184361915e8d0592760a254ab488'
+	run_test "MD5 multiple files" \
+		"$PROGRAM md5 file1 file2" \
+		"$expected_output" \
+		0
+
+	expected_output=$'SHA256 (file1) = a940d8aadc02f798331b2d46f1a8ad2c9821783060f4a0810da42bf785855c1c\nSHA256 (file2) = ab1ad6a49c022416008887464b8dc03b523b9e81530cf47d1f6f7712c1b30955'
+	run_test "SHA256 multiple files" \
+		"$PROGRAM sha256 file1 file2" \
+		"$expected_output" \
+		0
 	expected_output="SHA256 (file) = f9eb9a5a063eb386a18525c074e1065c316ec434f911e0d7d59ba2d9fd134705"
 	expected_output_r="f9eb9a5a063eb386a18525c074e1065c316ec434f911e0d7d59ba2d9fd134705 file"
 
@@ -316,6 +329,13 @@ test_combined() {
 		"$expected_output" \
 		0 \
 		"just to be extra clear"
+
+	expected_output=$'("42 is nice")= 35f1d6de0302e2086a4e472266efb3a9\nMD5 ("foo") = acbd18db4cc2f85cedef654fccc4a4d8\nMD5 (file1) = f6994894a975f34178b43db4062cece1\nMD5 (file2) = 4345184361915e8d0592760a254ab488'
+	run_test "MD5 with stdin -p + -s string + multiple files" \
+		"$PROGRAM md5 -ps 'foo' file1 file2" \
+		"$expected_output" \
+		0 \
+		"42 is nice"
 
 	expected_output=$'("be sure to handle edge cases carefully")= ef9241f878a1da676104a81239792a2817bc0390a427ca20bad1a59030fd20c2\nSHA256 (file) = f9eb9a5a063eb386a18525c074e1065c316ec434f911e0d7d59ba2d9fd134705'
 	run_test "SHA256 -p with stdin + file" \
@@ -406,7 +426,7 @@ test_file
 test_combined
 test_invalid
 
-rm -f file
+rm -f file file1 file2
 
 echo
 echo "Résumé : $pass OK, $fail FAIL"

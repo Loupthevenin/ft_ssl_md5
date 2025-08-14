@@ -86,7 +86,6 @@ static void	sha256_transform(t_sha256 *sha256, const unsigned char data[64])
 	g = sha256->state[6];
 	h = sha256->state[7];
 	i = 0;
-	// Boucle principale de compression
 	while (i < 64)
 	{
 		t1 = h + BS1G1(e) + CH(e, f, g) + k[i] + w[i];
